@@ -9,6 +9,12 @@ public class Result {
     public final double d;//経路長
     public final double temp;//温度
 
+    /**
+     * コンストラクタのみ
+     * @param t
+     * @param d
+     * @param temp 
+     */
     public Result(int t, double d, double temp) {
         this.t = t;
         this.d = d;
