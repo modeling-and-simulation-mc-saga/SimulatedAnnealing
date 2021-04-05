@@ -9,6 +9,7 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import model.Simulation;
 
 /**
@@ -30,7 +31,7 @@ public class GuiSimulation implements Runnable {
     private DrawPanel drawPanel;
 
     public GuiSimulation() throws IOException {
-        sys = new Simulation("points.txt");
+        sys = new Simulation("points.txt",new Random(48L));
         t = 0;
     }
 
