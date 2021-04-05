@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Point;
 import java.util.List;
+import java.util.Random;
 import myLib.utils.Utils;
 
 /**
@@ -16,15 +17,17 @@ public class Route {
     //点の存在する範囲
     private Point min;
     private Point max;
+    private final Random random;
 
     /**
      * コンストラクタ
      *
      * @param path 初期の経路
      */
-    public Route(List<Point> path) {
+    public Route(List<Point> path, Random random) {
         this.path = path;
         calcArea();
+        this.random = random;
     }
 
     /**
@@ -67,8 +70,8 @@ public class Route {
         int pp = 0;
         int qq = 0;
         while (pp == qq) {
-            pp = (int) ((n - 1) * Math.random());
-            qq = (int) ((n - 1) * Math.random());
+            pp = random.nextInt(n-1);
+            qq = random.nextInt(n-1);
         }
         int p = 1 + Math.min(pp, qq);
         int q = 1 + Math.max(pp, qq);
@@ -94,7 +97,7 @@ public class Route {
             newPath.add(path.get(i));
         }
 
-        Route np = new Route(newPath);
+        Route np = new Route(newPath,random);
         int qq = (q + 1) % path.size();
         np.pathLength = this.pathLength
                 - (path.get(p - 1).distance(path.get(p))

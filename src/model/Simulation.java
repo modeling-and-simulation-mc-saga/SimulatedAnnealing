@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import myLib.utils.FileIO;
 import myLib.utils.Utils;
 
@@ -18,6 +19,7 @@ public class Simulation {
     private Route path;//現在の経路
     private final Route initialPath;
     private double temperature;//温度
+    private final Random random;
 
     /**
      * 頂点一覧のファイルを指定して初期化
@@ -25,8 +27,9 @@ public class Simulation {
      * @param filename
      * @throws IOException
      */
-    public Simulation(String filename) throws IOException {
+    public Simulation(String filename, Random random) throws IOException {
         List<Point> list = Utils.createList();
+        this.random = random;
         try (BufferedReader in = FileIO.openReader(filename)) {
             String line;
             while ((line = in.readLine()) != null) {
@@ -41,16 +44,17 @@ public class Simulation {
                 }
             }
         }
-        path = new Route(list);
-        initialPath = new Route(list);
+        path = new Route(list,random);
+        initialPath = new Route(list,random);
         path.calcPathLength();
         //十分高温に設定
         temperature = list.size() * Math.max(path.getMax().x - path.getMin().x,
                 path.getMax().y - path.getMin().y);
     }
 
-    public Simulation(String lines[]) throws NumberFormatException {
+    public Simulation(String lines[],Random random) throws NumberFormatException {
         List<Point> list = Utils.createList();
+        this.random = random;
         for (String line : lines) {
             String s[] = line.split("\\s+");
             if (s.length > 1) {
@@ -63,8 +67,8 @@ public class Simulation {
                 }
             }
         }
-        path = new Route(list);
-        initialPath = new Route(list);
+        path = new Route(list,random);
+        initialPath = new Route(list,random);
         path.calcPathLength();
         //十分高温に設定
         temperature = list.size() * Math.max(path.getMax().x - path.getMin().x,
@@ -99,7 +103,7 @@ public class Simulation {
             return true;
         }
         //新経路の方が長い
-        if (Math.random() < Math.exp(-d / temperature)) {
+        if (random.nextDouble() < Math.exp(-d / temperature)) {
             path = cand;
             path.calcPathLength();
             return true;
@@ -143,7 +147,7 @@ public class Simulation {
     }
 
     public void reInitialize() {
-        path = new Route(initialPath.getPath());
+        path = new Route(initialPath.getPath(),random);
         path.calcPathLength();
         temperature = Math.max(path.getMax().x, path.getMax().y);
     }
@@ -154,7 +158,7 @@ public class Simulation {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        Simulation sim = new Simulation("points.txt");
+        Simulation sim = new Simulation("points.txt",new Random(48L));
         List<Result> plist = Utils.createList();
         for (int i = 0; i < 200; i++) {
             for (int t = 0; t < 1000; t++) {
