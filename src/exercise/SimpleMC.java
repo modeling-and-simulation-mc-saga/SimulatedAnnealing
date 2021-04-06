@@ -40,19 +40,15 @@ public class SimpleMC {
      * 一時間ステップ
      */
     public void oneStep() {
-        int s = current;
-        while (s == current) {//遷移先の候補
-            s = myRandom.nextInt(numState);
-        }
-        if (energy[current] <= energy[s]) {//遷移先のエネルギーが高い
-            double de = energy[s] - energy[current];
-            if (myRandom.nextDouble() < Math.exp(-de / temperature)) {
-                current = s;
-            }
-        } else {
-            current = s;
-        }
-        count[current]++;
+        // 遷移先候補を見つける
+        
+        
+        // energy 差に応じて、実際に遷移するかを決定
+        
+        
+        
+        // count[]を更新
+        
     }
 
     /**
