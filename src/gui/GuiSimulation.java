@@ -25,7 +25,6 @@ public class GuiSimulation implements Runnable {
     private final double r = 10;
     private final double fx = 2.;
     private final double fy = 2;
-    private final int tMax = 500;
     private final double coolingRate = 0.98;
     private int t = 0;
     private DrawPanel drawPanel;
