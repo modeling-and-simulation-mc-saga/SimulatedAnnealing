@@ -1,30 +1,29 @@
 package exercise;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Random;
 import java.util.StringJoiner;
-import myLib.utils.FileIO;
 
 /**
- * 簡単な有限温度Monte Carlo
+ * Simple Monte Carlo simulation at finite temperature 簡単な有限温度Monte Carlo
  *
  * @author tadaki
  */
 public class SimpleMC {
 
-    private final int count[];//各状態の訪問数
-    private final double energy[];//各状態のエネルギー
-    private double temperature;//温度
+    private final int count[];//the number of visits for each state
+    private final double energy[];//the energy for each state
+    private double temperature;//temperature
     private final Random myRandom;
-    private int current;//現在の状態
-    private int numState;//状態総数
+    private int current;//current state
+    private int numState;//the number of states
 
     /**
-     * 温度を与えて初期化
+     * Initialize by specifying temperature
      *
-     * @param energy エネルギー順位
-     * @param myRandom 乱数生成機
+     * @param energy energy state
+     * @param myRandom
      */
     public SimpleMC(double[] energy, Random myRandom) {
         this.myRandom = myRandom;
@@ -36,35 +35,27 @@ public class SimpleMC {
         temperature = Double.MAX_VALUE;
     }
 
-    /**
-     * 一時間ステップ
-     */
+
     public void oneStep() {
-        // 遷移先候補を見つける
-        
-        
-        // energy 差に応じて、実際に遷移するかを決定
-        
-        
-        
-        // count[]を更新
-        
+        int s = current;
+        while (s == current) {//candidate for destination
+            s = myRandom.nextInt(numState);
+        }
+        if (energy[current] <= energy[s]) {//destination has higher energy
+            double de = energy[s] - energy[current];
+            if (myRandom.nextDouble() < Math.exp(-de / temperature)) {
+                current = s;
+            }
+        } else {
+            current = s;
+        }
+        count[current]++;
     }
 
-    /**
-     * 各状態の訪問数
-     *
-     * @return
-     */
     public int[] getCount() {
         return count;
     }
 
-    /**
-     * 各状態の相対頻度
-     *
-     * @return
-     */
     public double[] evalFreq() {
         int sum = 0;
         for (int c : count) {
@@ -78,7 +69,7 @@ public class SimpleMC {
     }
 
     /**
-     * 各状態の出現確率の理論値
+     * theoretical values for frequencies
      *
      * @return
      */
@@ -101,7 +92,7 @@ public class SimpleMC {
     }
 
     /**
-     * 配列を文字列化
+     * Converting array to string
      *
      * @param d
      * @return
@@ -115,7 +106,7 @@ public class SimpleMC {
     }
 
     /**
-     * 配列を文字列化
+     * Converting array to string
      *
      * @param d
      * @return
@@ -130,28 +121,29 @@ public class SimpleMC {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        double temperature = 10.;
+        double temperature = 1.;
         int tmax = 50000;
         int dt = 100;
         Random myRandom = new Random(48L);
         //エネルギー順位
         double energy[] = {0., 1., 2., 4.};
-        
+
         SimpleMC simpleMC = new SimpleMC(energy, myRandom);
         simpleMC.setTemperature(temperature);
-        
-        try ( BufferedWriter out = FileIO.openWriter("SimpleMC.txt")) {
+        String filename = "SimpleMC-" + String.valueOf((int) temperature) + ".txt";
+        try ( PrintStream out = new PrintStream(filename)) {
             for (int t = 0; t < tmax; t++) {
                 simpleMC.oneStep();
-                if (t % dt == 0) {//100ステップ毎に出力
-                    FileIO.writeSSV(out, t, SimpleMC.a2ss(simpleMC.evalFreq()));
+                if (t % dt == 0) {//output at every dt step
+                    out.println(t + " " + SimpleMC.a2ss(simpleMC.evalFreq()));
                 }
             }
         }
-        System.out.println("シミュレーション結果：" + SimpleMC.a2s(simpleMC.evalFreq()));
-        System.out.println("理論値　　　　　　　：" + SimpleMC.a2s(simpleMC.expectation()));
+        System.out.println("Simulation:" + SimpleMC.a2s(simpleMC.evalFreq()));
+        System.out.println("Theory    :" + SimpleMC.a2s(simpleMC.expectation()));
     }
 
 }
