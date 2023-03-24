@@ -39,15 +39,14 @@ public class SimpleMC {
     public void oneStep() {
         int s = current;
         while (s == current) {//candidate for destination
-            s = myRandom.nextInt(numState);
+
         }
         if (energy[current] <= energy[s]) {//destination has higher energy
-            double de = energy[s] - energy[current];
-            if (myRandom.nextDouble() < Math.exp(-de / temperature)) {
-                current = s;
-            }
+
+        
+        
         } else {
-            current = s;
+
         }
         count[current]++;
     }
